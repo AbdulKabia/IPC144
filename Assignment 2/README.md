@@ -1,4 +1,4 @@
-A weather analyzer written in C.
+The successor to the previous weather analyzer. Weather Analyzer 2.0!
 
 Here is some sample code to test it with
 

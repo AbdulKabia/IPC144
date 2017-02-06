@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <Windows.h>
 
 
 /*an instance of this struct holds the weather data for a single day*/
@@ -26,7 +27,9 @@ struct MonthlyStatistic {
 };
 int readDailyData(FILE* fp, struct DailyData allData[]);
 
-int getRelevantRecords(int yearWanted, const struct DailyData allData[], int sz, struct DailyData yearData[]);
+void monthToWrite(int month);
+int getRelevantRecords(int yearWanted, const struct DailyData allData[], int sz,
+	struct DailyData yearData[]);
 void sortYearData(struct DailyData yearData[], int sz);
 void getStats(int month, const struct DailyData yearData[],
 	int sz, struct MonthlyStatistic* monthStats);
@@ -44,6 +47,7 @@ int main(void) {
 		printf("You need to put historicaldata.csv into this directory\n");
 		exit(0);
 	}
+	system("COLOR 0D");
 	struct DailyData  allData[3000];
 	struct DailyData yearData[366];
 	int numTotalRecords;
@@ -95,12 +99,18 @@ int readDailyData(FILE* fp, struct DailyData allData[]) {
 	}
 	return i;
 }
+
+// Will get the relevant data that is related to the year that is requested
 int getRelevantRecords(int yearWanted, const struct DailyData allData[],
 	int sz, struct DailyData yearData[]) {
+
+
 	int i, a = 0;
-	//put your code here
 	for (i = 0; i < sz; i++)
 	{
+		// Will evaluate to see if the year that i is currently pointing to 
+		// is the one we're looking for. And if so, it'll copy the data
+		// accordingly.
 		if (allData[i].year == yearWanted)
 		{
 			yearData[a].year = allData[i].year;
@@ -118,19 +128,22 @@ int getRelevantRecords(int yearWanted, const struct DailyData allData[],
 	return a;
 }
 
+// Will sort the data that has been recieved from the previous command
 void sortYearData(struct DailyData yearData[], int sz) {
-	//put your code here
+	// COMPLETE///
+
 	int a, d, month, day;
 	float high, low, precip;
 	char cond;
 
-	// This will sort the information
+	// This will loop through entire array
 	for (d = 0; d < sz; d++)
 	{
-
+		// This will also loop through the entire array
 		for (a = 0; a < sz - 1; a++)
 		{
-			// Check for month
+			// If statement that will evaluate the month and the day, and will
+			// sort them accordingly
 			if (yearData[a].month > yearData[a + 1].month || (yearData[a].month
 				== yearData[a + 1].month && yearData[a].day >
 				yearData[a + 1].day))
@@ -171,17 +184,18 @@ void sortYearData(struct DailyData yearData[], int sz) {
 
 }
 
+// Will get the necessary stats after the above funtion has been called
 void getStats(int month, const struct DailyData yearData[],
 	int sz, struct MonthlyStatistic* monthly) {
-	//INCOMPLETEEEEEEE //////////
+	// COMPLETE //
+
 	int i;
 
 	float max = yearData[0].high;
 	float min = 0;
-	float totalPrecip;
 
-
-	// Will find the minimum temp in the low table
+	// This will find a low temprature in the month it's looking for
+	// And use that as a base for us to find the lowest minimum temp
 	for (int a = 0; a < sz; a++)
 	{
 		if (yearData[a].month == month)
@@ -190,6 +204,8 @@ void getStats(int month, const struct DailyData yearData[],
 		}
 	}
 
+	// Will find the minimum temp in the low table using the
+	// info we got from above as a sample low
 	for (i = 0; i < sz; i++)
 	{
 		if (yearData[i].month == month)
@@ -215,10 +231,13 @@ void getStats(int month, const struct DailyData yearData[],
 		}
 
 	}
+
 	monthly->maxTemperature = max;
 
 	float totalMax = 0, totalMin = 0;
 	int  maxCounter = 0, minCounter = 0;
+
+	// Will add all the highs in a given month and count how many were added
 	for (i = 0; i < sz; i++)
 	{
 		if (yearData[i].month == month)
@@ -228,6 +247,7 @@ void getStats(int month, const struct DailyData yearData[],
 		}
 	}
 
+	// Will add all the low in a given month and count how many were added
 	for (i = 0; i < sz; i++)
 	{
 		if (yearData[i].month == month)
@@ -241,9 +261,12 @@ void getStats(int month, const struct DailyData yearData[],
 	maxAvg = totalMax / maxCounter;
 	minAvg = totalMin / minCounter;
 
+	// Will get you the average temprature of given month
 	float avg = average(maxAvg, minAvg);
 	monthly->averageTemperature = avg;
 
+	// Will add the precipitation of each day together in the given month
+	float totalPrecip = 0;
 	for (int b = 0; b < sz; b++)
 	{
 		if (yearData[b].month == month)
@@ -252,143 +275,64 @@ void getStats(int month, const struct DailyData yearData[],
 		}
 	}
 
+	monthly->totalPrecipitation = totalPrecip;
 }
 
 void printMonthlyStatistic(int month, const struct MonthlyStatistic* monthly) {
-	// Complete
-	char monthsArr[12];
+	// COMPLETE///
 
-	switch (month)
-	{
-	case 1:
-		strcpy(monthsArr, "January");
-		break;
+	printf("| ");
+	monthToWrite(month);
 
-	case 2:
-		strcpy(monthsArr, "February");
-		break;
-
-	case 3:
-		strcpy(monthsArr, "March");
-		break;
-
-	case 4:
-		strcpy(monthsArr, "April");
-		break;
-
-	case 5:
-		strcpy(monthsArr, "May");
-		break;
-
-	case 6:
-		strcpy(monthsArr, "June");
-		break;
-
-	case 7:
-		strcpy(monthsArr, "July");
-		break;
-
-	case 8:
-		strcpy(monthsArr, "August");
-		break;
-
-	case 9:
-		strcpy(monthsArr, "September");
-		break;
-
-	case 10:
-		strcpy(monthsArr, "October");
-		break;
-
-	case 11:
-		strcpy(monthsArr, "November");
-		break;
-
-	case 12:
-		strcpy(monthsArr, "December");
-		break;
-
-	default:
-		break;
-	}
-
-	printf("| %9s | %-5.1f | %-5.1f | %-5.1f | %-5.1f |\n", monthsArr,
+	printf(" | %-5.1f | %-5.1f | %-5.1f |  %-6.1f |\n",
 		monthly->maxTemperature, monthly->minTemperature,
 		monthly->averageTemperature, monthly->totalPrecipitation);
 }
 
 void graphLine(int month, const struct MonthlyStatistic* monthly) {
-	//put your code here
-	//I DONT KNOW WHAT TO DO HERE
+	// Complete
+	int i;
+	printf(" ");
+	monthToWrite(month);
+	printf("  | ");
+	int roundedInt = (((int)monthly->totalPrecipitation) % 10);
+
+	if (roundedInt >= 5)
+	{
+		int roundUp = (((((int)monthly->totalPrecipitation) / 10) * 10) + 10);
+		int roundUpPrint = roundUp / 10;
+		for (i = 0; i < roundUpPrint; i++)
+		{
+			printf("*");
+		}
+	}
+
+	else if (roundedInt < 5)
+	{
+		int roundDown = ((((int)monthly->totalPrecipitation) / 10) * 10);
+		int roundDownPrint = roundDown / 10;
+		for (i = 0; i < roundDownPrint; i++)
+		{
+			printf("*");
+		}
+	}
+
+	printf("\n");
 }
 
 void printVerbose(const struct DailyData allData[], int sz) {
-	//put your code here
-	// INCOMPLETE///
+	// COMPLETE///
 	int i;
-	char monthsArr[12];
-	int month = 1;
-	switch (month)
-	{
-	case 1:
-		strcpy(monthsArr, "January");
-		break;
-
-	case 2:
-		strcpy(monthsArr, "February");
-		break;
-
-	case 3:
-		strcpy(monthsArr, "March");
-		break;
-
-	case 4:
-		strcpy(monthsArr, "April");
-		break;
-
-	case 5:
-		strcpy(monthsArr, "May");
-		break;
-
-	case 6:
-		strcpy(monthsArr, "June");
-		break;
-
-	case 7:
-		strcpy(monthsArr, "July");
-		break;
-
-	case 8:
-		strcpy(monthsArr, "August");
-		break;
-
-	case 9:
-		strcpy(monthsArr, "September");
-		break;
-
-	case 10:
-		strcpy(monthsArr, "October");
-		break;
-
-	case 11:
-		strcpy(monthsArr, "November");
-		break;
-
-	case 12:
-		strcpy(monthsArr, "December");
-		break;
-
-	default:
-		break;
-	}
 
 	for (i = 0; i < sz; i++)
 	{
-		printf("%9s %d %d: %3f", monthsArr, allData[i].day, allData[i].year, allData[i].precipitation);
-		draw;
+		printf(" ");
+		monthToWrite(allData[i].month);
+		printf("%3d %d: %5.1f  ", allData[i].day, allData[i].year,
+			average(allData[i].low, allData[i].high));
+		draw(symbolToDraw(allData[i].condition, average(allData[i].low,
+			allData[i].high)), 20);
 	}
-
-
 
 }
 
@@ -430,4 +374,64 @@ void draw(char c, int num) {
 		printf("%c", c);
 	}
 	printf("\n");
+}
+
+void monthToWrite(int month) {
+
+	char monthsArr[10];
+	switch (month)
+	{
+	case 1:
+		strcpy(monthsArr, "January");
+		break;
+
+	case 2:
+		strcpy(monthsArr, "February");
+		break;
+
+	case 3:
+		strcpy(monthsArr, "March");
+		break;
+
+	case 4:
+		strcpy(monthsArr, "April");
+		break;
+
+	case 5:
+		strcpy(monthsArr, "May");
+		break;
+
+	case 6:
+		strcpy(monthsArr, "June");
+		break;
+
+	case 7:
+		strcpy(monthsArr, "July");
+		break;
+
+	case 8:
+		strcpy(monthsArr, "August");
+		break;
+
+	case 9:
+		strcpy(monthsArr, "September");
+		break;
+
+	case 10:
+		strcpy(monthsArr, "October");
+		break;
+
+	case 11:
+		strcpy(monthsArr, "November");
+		break;
+
+	case 12:
+		strcpy(monthsArr, "December");
+		break;
+
+	default:
+		break;
+	}
+
+	printf("%9s", monthsArr);
 }

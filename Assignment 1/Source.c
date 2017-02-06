@@ -1,6 +1,5 @@
 //Program Name: Weather Data Analysis
 //By: Abdul Kabia
-//Student Number: 039-199-146
 //Course: IPC144
 //Semester: Fall
 //Program Purpose: The program will ask the user for a positive number of days, it will then
